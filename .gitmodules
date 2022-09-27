@@ -1,3 +1,3 @@
 [submodule "Unity-Framework"]
-	path = Assets/Project/Code
+	path = Assets/_Project/Code
 	url = https://github.com/bezoro/Unity-Framework.git
