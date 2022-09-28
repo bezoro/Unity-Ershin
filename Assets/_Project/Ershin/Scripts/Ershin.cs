@@ -1,5 +1,6 @@
 using Bezoro.Core;
 using UnityEngine;
+using Bezoro.StateMachines;
 using KinematicCharacterController;
 using Bezoro.Character.StateMachine;
 
@@ -7,49 +8,55 @@ namespace Bezoro.Character.Controller
 {
 	[SelectionBase, DisallowMultipleComponent]
 	[RequireComponent(typeof(KinematicCharacterMotor))]
-	public sealed class Ershin : Tickable,
+	public sealed class Ershin : KinematicCharacter<ErshinStateMachine> { }
+
+	public abstract class KinematicCharacter<TStateMachine> : Tickable,
 		ICharacterController
+	where TStateMachine : KinematicCharacterStateMachine, new()
 	{
 		[field: SerializeField]
 		public KinematicCharacterMotor CharacterMotor { get; private set; }
 
 		[field: SerializeField, HideInInspector]
-		public ErshinStateMachine StateMachine { get; private set; } = new();
+		public KinematicCharacterStateMachine StateMachine { get; private set; } =
+			new TStateMachine();
 
-		private void Awake()
+		protected virtual void Awake()
 		{
 			CharacterMotor.CharacterController = this;
-
 			StateMachine.Init(this, CharacterMotor);
 		}
 
-		public override void Tick() { StateMachine.Tick(); }
+		public override void Tick() =>
+			StateMachine.Tick();
 
-		public override void FixedTick() { StateMachine.FixedTick(); }
+		public override void FixedTick() =>
+			StateMachine.FixedTick();
 
-		public override void LateTick() { StateMachine.LateTick(); }
+		public override void LateTick() =>
+			StateMachine.LateTick();
 
 		#region KCC Methods
 
-		public void UpdateRotation(ref Quaternion currentRotation, float deltaTime) =>
+		public virtual void UpdateRotation(ref Quaternion currentRotation, float deltaTime) =>
 			StateMachine.UpdateRotation(ref currentRotation, deltaTime);
 
-		public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime) =>
+		public virtual void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime) =>
 			StateMachine.UpdateVelocity(ref currentVelocity, deltaTime);
 
-		public void BeforeCharacterUpdate(float deltaTime) =>
+		public virtual void BeforeCharacterUpdate(float deltaTime) =>
 			StateMachine.BeforeCharacterUpdate(deltaTime);
 
-		public void PostGroundingUpdate(float deltaTime) =>
+		public virtual void PostGroundingUpdate(float deltaTime) =>
 			StateMachine.PostGroundingUpdate(deltaTime);
 
-		public void AfterCharacterUpdate(float deltaTime) =>
+		public virtual void AfterCharacterUpdate(float deltaTime) =>
 			StateMachine.AfterCharacterUpdate(deltaTime);
 
-		public bool IsColliderValidForCollisions(Collider coll) =>
+		public virtual bool IsColliderValidForCollisions(Collider coll) =>
 			StateMachine.IsColliderValidForCollisions(coll);
 
-		public void OnGroundHit
+		public virtual void OnGroundHit
 		(
 			Collider hitCollider,
 			Vector3 hitNormal,
@@ -58,7 +65,7 @@ namespace Bezoro.Character.Controller
 		) =>
 			StateMachine.OnGroundHit(hitCollider, hitNormal, hitPoint, ref hitStabilityReport);
 
-		public void OnMovementHit
+		public virtual void OnMovementHit
 		(
 			Collider hitCollider,
 			Vector3 hitNormal,
@@ -67,7 +74,7 @@ namespace Bezoro.Character.Controller
 		) =>
 			StateMachine.OnMovementHit(hitCollider, hitNormal, hitPoint, ref hitStabilityReport);
 
-		public void ProcessHitStabilityReport
+		public virtual void ProcessHitStabilityReport
 		(
 			Collider hitCollider,
 			Vector3 hitNormal,
@@ -86,7 +93,7 @@ namespace Bezoro.Character.Controller
 				 ref hitStabilityReport
 				);
 
-		public void OnDiscreteCollisionDetected(Collider hitCollider) =>
+		public virtual void OnDiscreteCollisionDetected(Collider hitCollider) =>
 			StateMachine.OnDiscreteCollisionDetected(hitCollider);
 
 		#endregion
