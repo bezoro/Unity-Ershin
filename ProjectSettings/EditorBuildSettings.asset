@@ -7,7 +7,7 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 1
     path: Assets/Settings/AdvancedSceneManager/Resources/AdvancedSceneManager/AdvancedSceneManager.unity
-    guid: 5fb4981c9b7a829479e373081740bdb0
+    guid: 7228ddc6ad7407e4ea49c3860549450d
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 67d5aa5dcf88f7346a4232c008380853,
       type: 2}
